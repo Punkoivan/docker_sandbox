@@ -1,3 +1,4 @@
+# docker-compose config deploy 4 containers with zabbix server, agent, MySQL and Zabbix front with nginx
 version: '2'
 services:
   mysql:
