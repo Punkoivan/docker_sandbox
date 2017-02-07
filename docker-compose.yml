@@ -1,0 +1,48 @@
+version: '2'
+services:
+  mysql:
+    image: "mysql:5.7"
+    expose:
+     - "3306"
+    environment:
+     - MYSQL_ROOT_PASSWORD=p@assword
+     - MYSQL_DATABASE=zabbix
+     - MYSQL_USER=zabbix
+     - MYSQL_PASSWORD=z@bbix
+
+  zabbix-server:
+    image: "zabbix/zabbix-server-mysql:alpine-latest"
+    environment:
+     - DB_SERVER_HOST=mysql
+     - MYSQL_DATABASE=zabbix
+     - MYSQL_USER=zabbix
+     - MYSQL_PASSWORD=z@bbix
+    expose:
+     - "10051"
+    depends_on:
+     - mysql
+
+  zabbix-agent:
+    image: "zabbix/zabbix-agent:alpine-latest"
+    environment:
+     - ZBX_HOSTNAME=zabbix_agent
+     - ZBX_SERVER_HOST=zabbix-server
+    expose:
+     - "10050"
+    depends_on:
+     - mysql
+     - zabbix-server
+
+  zabbix-web:
+    image: "zabbix/zabbix-web-nginx-mysql:ubuntu-latest"
+    ports:
+     - "80:80"
+    environment:
+     - ZBX_SERVER_HOST=zabbix-server
+     - DB_SERVER_HOST=mysql
+     - MYSQL_USER=zabbix
+     - MYSQL_PASSWORD=z@bbix
+     - MYSQL_DATABASE=zabbix
+    depends_on:
+     - zabbix-server
+     - mysql
